@@ -14,13 +14,13 @@ namespace ExpenceTracker.Services
             _dbContext = dbContext;
         }
 
-        public async Task<CategoryResponceDTO> CreateCategory(CreateCategoryDTO createCategoryDTO)
+        public async Task<CategoryResponceDTO> CreateCategory(CreateCategoryDTO createCategoryDTO,string userId)
         {
             Category category = new Category()
             {
                 Id = createCategoryDTO.Id,
                 CategoryName = createCategoryDTO.CategoryName,
-                UserId = "test1234"
+                UserId = userId
             };
             await _dbContext.AddAsync(category);
             await _dbContext.SaveChangesAsync();

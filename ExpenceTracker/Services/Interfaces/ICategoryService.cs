@@ -4,6 +4,6 @@ namespace ExpenceTracker.Services.Interfaces
 {
     public interface ICategoryService
     {
-          Task<CategoryResponceDTO> CreateCategory(CreateCategoryDTO createCategoryDTO);
+          Task<CategoryResponceDTO> CreateCategory(CreateCategoryDTO createCategoryDTO,string userId);
     }
 }

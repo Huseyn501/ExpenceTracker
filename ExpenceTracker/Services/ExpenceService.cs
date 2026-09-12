@@ -24,8 +24,7 @@ namespace ExpenceTracker.Services
                 Price = createExpenceDTO.Amount,
                 dateTime = createExpenceDTO.dateTime,
                 CategoryId = createExpenceDTO.CategoryId,
-                UserId = "Test1234"
-                
+                UserId = userId     
             };
 
             await _context.Expences.AddAsync(expence);
