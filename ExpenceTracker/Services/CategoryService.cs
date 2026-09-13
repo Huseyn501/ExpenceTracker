@@ -2,6 +2,7 @@
 using ExpenceTracker.DTOs.CategoryDTOs;
 using ExpenceTracker.Models;
 using ExpenceTracker.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpenceTracker.Services
 {
@@ -14,7 +15,7 @@ namespace ExpenceTracker.Services
             _dbContext = dbContext;
         }
 
-        public async Task<CategoryResponceDTO> CreateCategory(CreateCategoryDTO createCategoryDTO,string userId)
+        public async Task<CategoryResponceDTO> CreateCategory(CreateCategoryDTO createCategoryDTO, string userId)
         {
             Category category = new Category()
             {
@@ -24,12 +25,25 @@ namespace ExpenceTracker.Services
             };
             await _dbContext.AddAsync(category);
             await _dbContext.SaveChangesAsync();
-            return  new CategoryResponceDTO()
+            return new CategoryResponceDTO()
             {
                 CategoryName = category.CategoryName,
                 Id = category.Id
             };
 
+        }
+
+        public async Task<List<CategoryResponceDTO>> GetAllCategories(string userId)
+        {
+            var expences = await _dbContext.Categories
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+            return expences.Select(x => new CategoryResponceDTO
+            {
+                CategoryName = x.CategoryName,
+                Id = x.Id,
+
+            }).ToList();  
         }
     }
 }
