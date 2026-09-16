@@ -33,17 +33,57 @@ namespace ExpenceTracker.Services
 
         }
 
+        public async Task<bool> DeleteCategory(int id,string userId)
+        {
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(c=>c.Id == id);
+            if(category == null)
+            {
+                return false;
+            }
+            _dbContext.Remove(category);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<List<CategoryResponceDTO>> GetAllCategories(string userId)
         {
-            var expences = await _dbContext.Categories
+            var categories = await _dbContext.Categories
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
-            return expences.Select(x => new CategoryResponceDTO
+            return categories.Select(x => new CategoryResponceDTO
             {
                 CategoryName = x.CategoryName,
                 Id = x.Id,
 
             }).ToList();  
+        }
+
+        public async Task<CategoryResponceDTO> GetCategoryById(int id)
+        {
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            if(category == null)
+            {
+                throw new KeyNotFoundException("Bele category yoxdu");
+            }
+
+            var categoryDTO = new CategoryResponceDTO()
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName
+            };
+
+            return categoryDTO;
+        }
+
+        public async Task<bool> UpdateCategory(UpdateCategoryDTO dto, int id,string userId)
+        {
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            if (category == null)
+            {
+                return false;
+            }
+            category.CategoryName = dto.CategoryName;
+            return true;
         }
     }
 }
