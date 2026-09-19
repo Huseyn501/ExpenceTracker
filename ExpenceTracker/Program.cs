@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using ExpenceTracker.Middleware;
 
 namespace ExpenceTracker
 {
@@ -95,6 +96,7 @@ namespace ExpenceTracker
             });
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<ExceptionMiddleware>();
 
           
             app.UseAuthentication();

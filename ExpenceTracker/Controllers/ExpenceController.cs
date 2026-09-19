@@ -13,22 +13,18 @@ namespace ExpenceTracker.Controllers
     [Authorize]
     public class ExpenceController : ControllerBase
     {
-       private readonly IExpenceService _expenceService;
+        private readonly IExpenceService _expenceService;
 
         public ExpenceController(IExpenceService expenceService)
         {
             _expenceService = expenceService;
         }
 
-       [HttpPost]
-       public async Task<IActionResult> CreateExpence([FromBody] CreateExpenceDTO dto)
+        [HttpPost]
+        public async Task<IActionResult> CreateExpence([FromBody] CreateExpenceDTO dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            ;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             var expence = await _expenceService.CreateExpenceAsync(dto, userId);
             return Ok(expence);
         }
@@ -36,12 +32,8 @@ namespace ExpenceTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> GetExpences()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            ;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             var expences = await _expenceService.GetAllExpencesAsync(userId);
             return Ok(expences);
         }
@@ -49,12 +41,8 @@ namespace ExpenceTracker.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            ;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             var expence = await _expenceService.GetExpenceByIdAsync(id, userId);
 
             if (expence == null) return NotFound();
@@ -66,12 +54,8 @@ namespace ExpenceTracker.Controllers
 
         public async Task<IActionResult> DeleteExpence(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            ;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             var result = await _expenceService.DeleteExpenceAsync(id, userId);
             return Ok(result);
         }
@@ -79,12 +63,9 @@ namespace ExpenceTracker.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateExpence(int id, [FromBody] UpdateExpenceDTO dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(userId == null)
-            {
-                return Unauthorized();
-            };
-            var result = await _expenceService.UpdateExpenceAsync(dto,userId,id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            var result = await _expenceService.UpdateExpenceAsync(dto, userId, id);
             return Ok(result);
         }
     }

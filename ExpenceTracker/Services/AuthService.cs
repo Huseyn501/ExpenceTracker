@@ -27,7 +27,7 @@ namespace ExpenceTracker.Services
         public async Task<AuthResponseDto?> LoginAsync(LoginDto Dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == Dto.Email);
-                if(user == null) return null;
+                if(user == null) throw new UnauthorizedAccessException("Invalid email or password."); 
             var result = _passwordHash.VerifyHashedPassword(user, user.Password, Dto.Passoword);
             if (result == PasswordVerificationResult.Failed) return null;
 
@@ -37,7 +37,7 @@ namespace ExpenceTracker.Services
         public async Task<AuthResponseDto?> RegisterAsync(RegisterDto Dto)
         {
             if (await _context.Users.AnyAsync(u => u.Email == Dto.Email))
-                return null;
+                throw new ArgumentException("This email is already in use.");
             var user = new User()
             {
                 Name = Dto.Name,

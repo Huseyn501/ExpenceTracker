@@ -4,7 +4,7 @@ namespace ExpenceTracker.Models
 {
     public class Category
     {
-         public int Id { get; set; }
+        public int Id { get; set; }
         public string CategoryName { get; set; }
 
         public string UserId { get; set; }

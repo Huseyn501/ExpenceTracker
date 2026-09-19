@@ -19,28 +19,34 @@ namespace ExpenceTracker.Services
         {
             Category category = new Category()
             {
-                Id = createCategoryDTO.Id,
+                
                 CategoryName = createCategoryDTO.CategoryName,
                 UserId = userId
             };
-            await _dbContext.AddAsync(category);
+
+            await _dbContext.Categories.AddAsync(category);
             await _dbContext.SaveChangesAsync();
+
             return new CategoryResponceDTO()
             {
                 CategoryName = category.CategoryName,
                 Id = category.Id
             };
-
         }
 
-        public async Task<bool> DeleteCategory(int id,string userId)
+        public async Task<bool> DeleteCategory(int id, string userId)
         {
-            var category = await _dbContext.Categories.FirstOrDefaultAsync(c=>c.Id == id);
-            if(category == null)
+            
+            var category = await _dbContext.Categories
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+
+            if (category == null)
             {
-                return false;
+
+                throw new KeyNotFoundException("Category not found or you do not have permission to access it.");
             }
-            _dbContext.Remove(category);
+
+            _dbContext.Categories.Remove(category);
             await _dbContext.SaveChangesAsync();
             return true;
         }
@@ -48,41 +54,50 @@ namespace ExpenceTracker.Services
         public async Task<List<CategoryResponceDTO>> GetAllCategories(string userId)
         {
             var categories = await _dbContext.Categories
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == userId) 
                 .ToListAsync();
+
             return categories.Select(x => new CategoryResponceDTO
             {
                 CategoryName = x.CategoryName,
-                Id = x.Id,
-
-            }).ToList();  
+                Id = x.Id
+            }).ToList();
         }
 
-        public async Task<CategoryResponceDTO> GetCategoryById(int id)
+        public async Task<CategoryResponceDTO> GetCategoryById(int id, string userId)
         {
-            var category = await _dbContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
-            if(category == null)
+            
+            var category = await _dbContext.Categories
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
+            if (category == null)
             {
-                throw new KeyNotFoundException("Bele category yoxdu");
+                throw new KeyNotFoundException("Category not found or you do not have permission to access it.");
             }
 
-            var categoryDTO = new CategoryResponceDTO()
+            return new CategoryResponceDTO()
             {
                 Id = category.Id,
                 CategoryName = category.CategoryName
             };
-
-            return categoryDTO;
         }
 
-        public async Task<bool> UpdateCategory(UpdateCategoryDTO dto, int id,string userId)
+        public async Task<bool> UpdateCategory(UpdateCategoryDTO dto, int id, string userId)
         {
-            var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+          
+            var category = await _dbContext.Categories
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+
             if (category == null)
             {
-                return false;
+                throw new KeyNotFoundException("Category not found or you do not have permission to access it.");
             }
+
             category.CategoryName = dto.CategoryName;
+
+            
+            await _dbContext.SaveChangesAsync();
+
             return true;
         }
     }

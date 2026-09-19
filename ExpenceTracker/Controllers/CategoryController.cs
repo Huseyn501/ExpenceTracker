@@ -23,11 +23,7 @@ namespace ExpenceTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CreateCategoryDTO categoryDTO)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var createdCategory = await _categoryService.CreateCategory(categoryDTO, userId);
             return CreatedAtAction(nameof(GetAllCategories), new { id = createdCategory.Id }, createdCategory);
         }
@@ -35,48 +31,34 @@ namespace ExpenceTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) {
-                return Unauthorized(); }
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var categories = await _categoryService.GetAllCategories(userId);
             return Ok(categories);
+        }
+
+        [HttpGet("{id}")]
+
+        public async Task<IActionResult> GetCategoryById(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var category = await _categoryService.GetCategoryById(id, userId);
+            return Ok(category);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            ;
-            var result = await _categoryService.DeleteCategory(id,userId);
-            if (result == false)
-            {
-                return NotFound(new { Message = "Category not found" });
-            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var result = await _categoryService.DeleteCategory(id, userId);
             return NoContent();
         }
 
         [HttpPut("{id}")]
-                                                                                                          
-        public async Task<IActionResult> UpdateCategory([FromBody]UpdateCategoryDTO categoryDTO,int id)
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryDTO categoryDTO)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-            ;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var result = await _categoryService.UpdateCategory(categoryDTO, id, userId);
-            if(result == false)
-            {
-                return NotFound(new { Message = "Category not found" });
-            }
             return NoContent();
-
         }
     }
 }
