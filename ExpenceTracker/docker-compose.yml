@@ -1,15 +1,33 @@
-﻿services:
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+   
+    depends_on:
+      - db
+    environment:
+     
+      - ASPNETCORE_ENVIRONMENT=Development
+    
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=ExpenseTrackerDb;Username=postgres;Password=123456
+    restart: unless-stopped
+
+ 
   db:
     image: postgres:16
     container_name: expensetracker-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: ExpenseTrackerDb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=ExpenseTrackerDb
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
   postgres_data:
